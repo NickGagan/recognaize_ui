@@ -1,0 +1,202 @@
+$credit-height: 3rem;
+$credit-font-height: 1.25rem;
+$title-font-size: 4rem;
+$header-height: 8rem; 
+
+
+$tab-height: 3rem;
+$tab-font-size: 1.25rem;
+
+$footer-font-size: 1.8rem;
+$footer-height: 6rem;
+$max-button-width: 26rem;
+
+$subheader-height: 2rem;
+
+$text-area-height: 1rem;
+.App {
+  text-align: center;
+  height: 100%;
+  background-color: #f4f4f4;
+  overflow: hidden;
+}
+html, body {
+  height: 100%;
+}
+.creditSection {
+  height: $credit-height;
+  font-size: $credit-font-height;
+  line-height: $credit-height;
+  color: white;
+  border-bottom: 1px solid #f4f4f4;
+  background-color: black;
+  text-align: center;
+  padding-left: 2rem;
+}
+.titleSection {
+  height: $header-height;
+  font-size: $title-font-size;
+  line-height: $header-height;
+  color: black;
+  border-bottom: 1px solid #f4f4f4;
+  background-color: white;
+  text-align: center;
+}
+
+button {
+  background-color: unset;
+  border: unset;
+}
+
+.container {
+  display: flex; /* displays flex-items (children) inline */
+  flex-direction: column; /* stacks them vertically */
+  height: calc(100% - $header-height - $credit-height); /* needs to take the parents height, alternative: body {display: flex} */
+}
+
+.pageContent {
+  flex: 1; /* takes the remaining height of the "container" div */
+  overflow: auto; /* to scroll just the "main" div */
+}
+
+.tabSection{
+  height: $tab-height;
+  background-color: white;
+  padding-left: 2rem;
+  border-bottom: 1px solid #f4f4f4;
+  display: flex;
+}
+
+.tab {
+  border-bottom: 4px solid #e0e0e0;
+  height: 100%;
+  width: fit-content;
+  text-align: center;
+  line-height: $tab-height;
+  font-size: $tab-font-size;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  margin-right: 0.1rem;
+  &:hover {
+    border-bottom: 4px solid #7c7c7c;
+    cursor: pointer;
+
+  }
+  &.clicked {
+    border-bottom: 4px solid #0354e9;
+  }
+  &.selected {
+
+  }
+}
+
+
+.footerSection {
+  height: $footer-height;
+  display: flex;
+  justify-content: right;
+  border-top: 1px solid #e6e6e6;
+  box-sizing: border-box;
+
+  .button {
+    height: $footer-height;
+    width: fit-content;
+    line-height: $footer-height;
+    text-align: center;
+    padding: 0 3rem;
+    font-size: $footer-font-size;
+    max-width: $max-button-width;
+    width: 20%;
+    min-width: fit-content;
+    &.primary {
+      background-color: #0062ff;
+      color: white;
+      &:hover {
+        background-color: #0354e9;
+        cursor: pointer;
+      }
+    }
+    &.secondary {
+      background-color: black;
+      color: white;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+
+
+
+
+.textSectionContainer {
+  display: flex;
+  padding: 1rem 3rem 0 3rem;
+  .textInputSection {
+    width: 70%;
+    margin-right: 1.5rem;
+  }
+  .textOutputSection {
+    width: 40%;
+    margin-left: 1.5rem;
+  }
+  .textHeader {
+    padding-bottom: 0.5rem;
+    font-size: $subheader-height;
+    text-align: left;
+    
+  }
+
+  .textDescription {
+    color: grey;
+    padding-bottom: 1rem;
+    text-align: left;
+  }
+  #textInput {
+    max-width: 100%;
+    width: 100% !important;
+    min-width: 100%;
+    font-size: $text-area-height;
+    height: 70%;
+    min-height: $text-area-height;
+  }
+}
+
+
+.redditSectionContainer {
+  display: flex;
+  padding: 1rem 3rem 0 3rem;
+  .redditInputSection {
+    width: 70%;
+    margin-right: 1.5rem;
+  }
+  .redditOutputSection {
+    width: 40%;
+    margin-left: 1.5rem;
+  }
+  .redditHeader {
+    padding-bottom: 0.5rem;
+    font-size: $subheader-height;
+    text-align: left;
+    
+  }
+
+  .redditDescription {
+    color: grey;
+    padding-bottom: 1rem;
+    text-align: left;
+  }
+  #redditInput {
+    max-width: 100%;
+    width: 100% !important;
+    min-width: 100%;
+    font-size: $text-area-height;
+    height: $text-area-height + 1rem;
+  }
+  .messageUserContainer {
+    padding-top: 2rem;
+    text-align: left;
+  }
+}
