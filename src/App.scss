@@ -7,9 +7,9 @@ $header-height: 8rem;
 $tab-height: 3rem;
 $tab-font-size: 1.25rem;
 
-$footer-font-size: 1.8rem;
-$footer-height: 6rem;
-$max-button-width: 26rem;
+$footer-font-size: 1.2rem;
+$footer-height: 5rem;
+$max-button-width: 20rem;
 
 $subheader-height: 2rem;
 
@@ -102,11 +102,11 @@ button {
     height: $footer-height;
     width: fit-content;
     line-height: $footer-height;
-    text-align: center;
-    padding: 0 3rem;
+    text-align: left;
+    padding-left: 2rem;
     font-size: $footer-font-size;
     max-width: $max-button-width;
-    width: 20%;
+    width: 25%;
     min-width: fit-content;
     &.primary {
       background-color: #0062ff;
@@ -115,13 +115,23 @@ button {
         background-color: #0354e9;
         cursor: pointer;
       }
+      &.disabled {
+        background-color: #c6c6c6;
+        color: #8d8d8d;
+        cursor: not-allowed;
+      }
     }
     &.secondary {
       background-color: black;
       color: white;
-
       &:hover {
         cursor: pointer;
+      }
+      &.disabled {
+        background-color: #c6c6c6;
+        color: #8d8d8d;
+        border-right: 1px solid #8d8d8d;
+        cursor: not-allowed;
       }
     }
   }
@@ -133,12 +143,13 @@ button {
 
 .textSectionContainer {
   display: flex;
-  padding: 1rem 3rem 0 3rem;
+  padding: 1.5rem 3rem 0 3rem;
   .textInputSection {
     width: 70%;
     margin-right: 1.5rem;
+    overflow-wrap: break-word;
   }
-  .textOutputSection {
+  .textDescriptionContainer {
     width: 40%;
     margin-left: 1.5rem;
   }
@@ -148,31 +159,48 @@ button {
     text-align: left;
     
   }
-
+  .textResultsSection {
+    padding: 2rem 0 3rem 0;
+  }
   .textDescription {
     color: grey;
     padding-bottom: 1rem;
     text-align: left;
   }
-  #textInput {
+  .textArea {
+    font: inherit;
     max-width: 100%;
     width: 100% !important;
     min-width: 100%;
     font-size: $text-area-height;
     height: 70%;
     min-height: $text-area-height;
+    border: 1.5px solid black !important;
+    border-radius: 0.25rem;
+    
+    &.invalid {
+      box-shadow: none;
+      resize: none;
+      border: 1.5px solid red !important;
+      &:focus-visible {
+        outline-color: red;
+      }
+    }
   }
 }
 
-
 .redditSectionContainer {
   display: flex;
-  padding: 1rem 3rem 0 3rem;
+  padding: 1.5rem 3rem 0 3rem;
+  .messageCheckboxLabel {
+    padding-left: 0.5rem;
+  }
   .redditInputSection {
     width: 70%;
     margin-right: 1.5rem;
+    overflow-wrap: break-word;
   }
-  .redditOutputSection {
+  .redditDescriptionContainer {
     width: 40%;
     margin-left: 1.5rem;
   }
@@ -188,15 +216,35 @@ button {
     padding-bottom: 1rem;
     text-align: left;
   }
-  #redditInput {
+  .redditInput {
+    font: inherit;
     max-width: 100%;
     width: 100% !important;
     min-width: 100%;
     font-size: $text-area-height;
     height: $text-area-height + 1rem;
+    border: 1.5px solid black !important;
+    border-radius: 0.25rem;
+    
+    &.invalid {
+      box-shadow: none;
+      resize: none;
+      border: 1.5px solid red !important;
+      &:focus-visible {
+        outline-color: red;
+      }
+    }
   }
   .messageUserContainer {
-    padding-top: 2rem;
+    padding-top: 1rem;
     text-align: left;
+    padding-bottom: 2rem;
   }
+}
+
+.invalidInputMessage {
+  padding-top: 0.5rem;
+  color: red;
+  font-size: 0.75rem;
+  text-align: left !important;
 }

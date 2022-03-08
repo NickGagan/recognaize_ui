@@ -1,18 +1,20 @@
-import logo from './logo.svg';
+import '../node_modules/react-notifications-component/dist/theme.css'
+
 import './App.scss';
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import cx from "classnames";
-// import { analyzePost } from "./utils/recognize_ai_util";
+import { ReactNotifications, Store } from 'react-notifications-component'
+
+
 const REDDIT_STATE = "reddit";
 const TEXT_STATE = "text";
 
+const API_HOST = process.env.REACT_APP_API_ENV === "dev" ? "http://localhost:3001" : "www.someherokuereact.com";
 
 function App() {
   const [currentTab, selectTab] = useState(REDDIT_STATE);
   const [inputText, changeInputText] = useState("");
   const [redditMessageFlag, changeRedditFlag] = useState(false);
-  const [analyzeButtonDisabled, disableAnalyzeButton] = useState(true);
-
   function _changeRedditFlagState(event) {
     changeRedditFlag(event.target.checked);
   }
@@ -20,7 +22,25 @@ function App() {
   function _updateInputText(event) {
     changeInputText(event.target.value);
   }
+  function _onPreviewClick() {
+    window.open(inputText);
+  }
+  function _changeTab(type) {
+    if (currentTab !== type) {
+      selectTab(type);
+      changeInputText("");
+      changeRedditFlag(false);
+    }
+  }
 
+  function _isValidInput() {
+    if (currentTab === TEXT_STATE){
+      return inputText.length >= 80
+    }
+    const re = new RegExp("https://www.reddit.com/r/[^/]+/comments/[A-Za-z0-9]{6,}/[^/]")
+    const urlSplit = inputText.split("/")
+    return re.test(inputText) && (urlSplit.length === 8 || (urlSplit.length === 9 && urlSplit[8] === ""))
+  }
   function _onAnalyzeButtonClick() {
     const options = {
       method: "POST",
@@ -33,19 +53,72 @@ function App() {
         messageSubject: "Template message subject"
       })
     };
-    let url = "http://localhost:3001";
+    let url = API_HOST
     if (currentTab === REDDIT_STATE) {
-      const redditPost = "https://www.reddit.com/r/RecognAIze/comments/r8954v/test_post/".split("/");
+      const redditPost = inputText.split("/");
       const redditPostId = `t3_${redditPost[6]}`;
       url += `/health_reddit?id=${redditPostId}`
       if (redditMessageFlag === true) {
         url += `&messageFlag=${redditMessageFlag}`;
       }
+    } else {
+      url += '/health_text'
+      options.body = JSON.stringify({
+        text: inputText
+      })
     }
     // TODO: text state
     fetch(url, options)
-      .then(response => response.json())
-      .then(console.log("test"));
+      .then((response) => response.json())
+      .then(result => {
+        let message = "Recognaize.ai has detected no mental health issues in this text. Still concerned? Visit our resources link below.";
+        let type = "success";
+        if (result.poor_mental_health && currentTab === TEXT_STATE) {
+          message = "Recognaize.ai has detected mental health issues in the provided text. Please visit our list of resources for help/more information."
+          type = "default";
+        }
+        if (result.poor_mental_health && currentTab === REDDIT_STATE) {
+          message = "Recognaize.ai has detected mental health issues in the provided text. Please visit our list of resources for help/more information."
+          type = "default";
+          if (result.sent_message) {
+            message += ` A message has been sent to the user: ${result.author}.`
+          }
+        }
+
+        if (result && result.statusCode && result.statusCode !== 200) {
+          message = (result.message) ? result.message : "An unknown error has occured. Please try again later";
+          type = "danger";
+        }
+        Store.addNotification({
+          title: "Model has run successfully",
+          message: message,
+          type: type,
+          insert: "top",
+          container: "top-right",
+          animationIn: ["animate__animated", "animate__fadeIn"],
+          animationOut: ["animate__animated", "animate__fadeOut"],
+          dismiss: {
+            duration: (type === "danger") ? 5000 : 10000,
+            onScreen: true
+          }
+        });
+      })
+      .catch(err => {
+        console.log(err)
+        Store.addNotification({
+          title: "An error occured running Recognaize.ai",
+          message: "An unknown error has occured. Please try again later",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          animationIn: ["animate__animated", "animate__fadeIn"],
+          animationOut: ["animate__animated", "animate__fadeOut"],
+          dismiss: {
+            duration: 5000,
+            onScreen: true
+          }
+        });
+      });
   }
   function _renderTabs() {
     const redditTabStyle = cx({
@@ -58,16 +131,62 @@ function App() {
     });
     return (
       <div className="tabSection">
-          <button className={redditTabStyle} onClick={() => selectTab(REDDIT_STATE)}>
+          <button className={redditTabStyle} onClick={() => _changeTab(REDDIT_STATE)}>
             Reddit analysis
           </button>
-          <button className={textTabStyle} onClick={() => selectTab(TEXT_STATE)}>
+          <button className={textTabStyle} onClick={() => _changeTab(TEXT_STATE)}>
             Text analysis
           </button>
         </div>
     );
   }
 
+  function _renderTextArea() {
+    const invalid = !_isValidInput();
+    const textAreaStyles = cx({
+      "textArea": true,
+      "invalid": invalid
+    });
+    return (
+      <>
+        <textarea
+          className={textAreaStyles}
+          id="textInput"
+          rows={10}
+          placeholder="Please paste text here..."
+          onChange={_updateInputText.bind(this)}
+        />
+        {invalid && <div className="invalidInputMessage">
+          Minimum 80 characters ({80-inputText.length} remaining)
+          </div>}
+      </>
+      
+    );
+  }
+
+  function _renderRedditUrlInput() {
+    const invalidString = "URL format must follow: https://www.reddit.com/r/${SUB_REDDIT}/comments/${POST_ID}/${POST_NAME}"
+    const invalid = !_isValidInput();
+    const redditInputStyles = cx({
+      "redditInput": true,
+      "invalid": invalid
+    });
+    return (
+      <>
+      <input
+        className={redditInputStyles}
+        id="redditInput"
+        placeholder="Please paste reddit url here..."
+        type="url"
+        onChange={_updateInputText.bind(this)}
+      />
+      {invalid && <div className="invalidInputMessage">
+          {invalidString}
+          </div>}
+      </>
+    )
+    
+  }
   function _renderPageContent() {
     return (
       <div className="pageContent">
@@ -77,14 +196,9 @@ function App() {
               Reddit Input
             </div>
             <div className="redditDescription">
-              Recognize.ai is able to take a reddit url and determine whether the post displays signs of struggling mental health (min 150 chars). 
+              Recognize.ai is able to take a reddit url and determine whether the post displays signs of struggling mental health (min 80 chars). 
             </div>
-            <input
-              id="redditInput"
-              placeholder="Please paste reddit url here..."
-              type="url"
-              onChange={_updateInputText.bind(this)}
-            />
+            {_renderRedditUrlInput()}
             <div className="messageUserContainer">
               <div className="messageUserDescription">
 
@@ -95,16 +209,15 @@ function App() {
                 name="Message User?"
                 value="Message User?"
                 onClick={_changeRedditFlagState.bind(this)}/>
-              <label>Message User?</label>
+              <label className="messageCheckboxLabel">Message User?</label>
             </div>
-
           </div>
-          <div className="redditOutputSection">
+          <div className="redditDescriptionContainer">
             <div className="redditHeader">
-              Results
+              Model Description
             </div>
             <div className="redditDescription">
-              Click analyze to see results
+              The model used is _______. Include reference
             </div>
           </div>
 
@@ -118,21 +231,16 @@ function App() {
               Text Input
             </div>
             <div className="textDescription">
-              Recognize.ai is able to take a text input and determine whether it displays sign of struggling mental health (min 150 chars). 
+              Recognize.ai is able to take a text input and determine whether it displays sign of struggling mental health (min 80 chars). 
             </div>
-            <textarea
-              id="textInput"
-              rows={10}
-              placeholder="Please paste text here..."
-              onChange={_updateInputText.bind(this)}
-            />
+            {_renderTextArea()}
           </div>
-          <div className="textOutputSection">
+          <div className="textDescriptionContainer">
             <div className="textHeader">
-              Results
+              Model Description
             </div>
             <div className="textDescription">
-              Click analyze to see results
+              The model used is _______. Include reference
             </div>
           </div>
         </div>}
@@ -143,27 +251,33 @@ function App() {
   function _renderFooterSection() {
     const primaryButtonClass = cx({
       "button": true,
-      "primary": true
+      "primary": true,
+      "disabled": !_isValidInput()
     });
     const secondaryButtonClass = cx({
       "button": true,
-      "secondary": true
+      "secondary": true,
+      "disabled": !_isValidInput()
     });
     return (
       <div className="footerSection">
           {currentTab === REDDIT_STATE && <button
             className={secondaryButtonClass}
+            onClick = {() => _onPreviewClick()}
+            disabled={!_isValidInput()}
             >
               Preview
             </button>}
-          <button className={primaryButtonClass} onClick = {() => _onAnalyzeButtonClick()}>
-            Analyze
-          </button>
+            <button disabled={!_isValidInput()} className={primaryButtonClass} onClick = {() => _onAnalyzeButtonClick()}>
+              Analyze
+            </button>
       </div>
     );
   }
+
   return (
     <div className="App">
+      <ReactNotifications />
       <div className="creditSection">
         Developed by: Nick Gagan, Dennis Huynh, Christopher Salomons, Randy Lee
       </div>
