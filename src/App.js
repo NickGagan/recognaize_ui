@@ -4,12 +4,12 @@ import './App.scss';
 import { useState } from "react";
 import cx from "classnames";
 import { ReactNotifications, Store } from 'react-notifications-component'
-
-
+import { RECOGNIZE_AI_MESSAGE, RECOGNIZE_AI_RESOURCES, RECOGNIZE_AI_MODEL_DESC } from "./utils/messages";
+import report from "./static/Recognize_report_placeholder.pdf"
 const REDDIT_STATE = "reddit";
 const TEXT_STATE = "text";
 
-const API_HOST = process.env.REACT_APP_API_ENV === "dev" ? "http://localhost:3001" : "www.someherokuereact.com";
+const API_HOST = process.env.REACT_APP_API_ENV === "dev" ? "http://localhost:3001" : "https://recognize-ai-api.herokuapp.com";
 
 function App() {
   const [currentTab, selectTab] = useState(REDDIT_STATE);
@@ -49,8 +49,9 @@ function App() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: "Template message body",
-        messageSubject: "Template message subject"
+        message: `${RECOGNIZE_AI_MESSAGE}
+        Post: ${inputText}`,
+        messageSubject: "Recognize.ai mental health detector"
       })
     };
     let url = API_HOST
@@ -187,6 +188,24 @@ function App() {
     )
     
   }
+  function _renderResourcesContent() {
+    return (<div className="resourcesSection">
+      <div className="resourceHeader">
+        Resources
+      </div>
+      <div className="resourceDescription">
+        {RECOGNIZE_AI_RESOURCES}
+        <a href="http://www.suicidepreventionlifeline.org" target="_blank"> 
+        {"\n National Suicide Prevention Lifeline"}
+        </a>
+        <div> Phone: 1 800 273 TALK (8255)</div>
+        <a href="http://www.befrienders.org" target="_blank"> 
+        {"\n Befrienders"}
+        </a>
+        <div> Confidential support for those in distress</div>
+      </div>
+    </div>)
+  }
   function _renderPageContent() {
     return (
       <div className="pageContent">
@@ -210,6 +229,7 @@ function App() {
                 value="Message User?"
                 onClick={_changeRedditFlagState.bind(this)}/>
               <label className="messageCheckboxLabel">Message User?</label>
+              {_renderResourcesContent()}
             </div>
           </div>
           <div className="redditDescriptionContainer">
@@ -217,7 +237,8 @@ function App() {
               Model Description
             </div>
             <div className="redditDescription">
-              The model used is _______. Include reference
+              {RECOGNIZE_AI_MODEL_DESC}
+              <a href={report} target="_blank"> Report </a>
             </div>
           </div>
 
@@ -234,13 +255,15 @@ function App() {
               Recognize.ai is able to take a text input and determine whether it displays sign of struggling mental health (min 80 chars). 
             </div>
             {_renderTextArea()}
+            {_renderResourcesContent()}
           </div>
           <div className="textDescriptionContainer">
             <div className="textHeader">
               Model Description
             </div>
             <div className="textDescription">
-              The model used is _______. Include reference
+              {RECOGNIZE_AI_MODEL_DESC}
+              <a href={report} target="_blank"> Report </a>
             </div>
           </div>
         </div>}

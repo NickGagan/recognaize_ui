@@ -163,9 +163,10 @@ button {
     padding: 2rem 0 3rem 0;
   }
   .textDescription {
-    color: grey;
+    color: #525252;
     padding-bottom: 1rem;
     text-align: left;
+    white-space:pre-wrap;
   }
   .textArea {
     font: inherit;
@@ -212,9 +213,11 @@ button {
   }
 
   .redditDescription {
-    color: grey;
+    color: #525252;
     padding-bottom: 1rem;
     text-align: left;
+    white-space:pre-wrap;
+
   }
   .redditInput {
     font: inherit;
@@ -245,6 +248,25 @@ button {
 .invalidInputMessage {
   padding-top: 0.5rem;
   color: red;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   text-align: left !important;
+}
+
+.resourcesSection {
+    .resourceHeader {
+      padding-top: 1.5rem;
+      padding-bottom: 0.5rem;
+      font-size: $subheader-height;
+      text-align: left;
+    }
+    .resourceDescription {
+      color: #525252;
+      padding-bottom: 1rem;
+      text-align: left;
+      white-space:pre-wrap;
+    }
+}
+a{
+  text-decoration: none;
+  color: #0f62fe;
 }
