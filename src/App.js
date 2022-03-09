@@ -42,7 +42,6 @@ function App() {
     return re.test(inputText) && (urlSplit.length === 8 || (urlSplit.length === 9 && urlSplit[8] === ""))
   }
   function _onAnalyzeButtonClick() {
-    console.log(Buffer.from("admin:admin").toString('base64'));
     const options = {
       method: "POST",
       headers: {
@@ -74,7 +73,6 @@ function App() {
     fetch(url, options)
       .then((response) => response.json())
       .then(result => {
-        console.log("result");
         let message = "Recognaize.ai has detected no mental health issues in this text. Still concerned? Visit our resources link below.";
         let type = "success";
         if (result.poor_mental_health && currentTab === TEXT_STATE) {
@@ -108,7 +106,6 @@ function App() {
         });
       })
       .catch(err => {
-        console.log(err)
         Store.addNotification({
           title: "An error occured running Recognaize.ai",
           message: "An unknown error has occured. Please try again later",
