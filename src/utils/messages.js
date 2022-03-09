@@ -3,11 +3,7 @@
 
 
 
-export {
-    RECOGNIZE_AI_MESSAGE,
-    RECOGNIZE_AI_RESOURCES,
-    RECOGNIZE_AI_MODEL_DESC
-}
+
 const RECOGNIZE_AI_MESSAGE = `Recognize.ai is a state-of-the-art AI application built to help those potentially struggling with their mental health. Recently, it has flagged a post of yours with those signs and we want to help.
 You are not alone. Helplines, also known as hotlines, exist to provide a confidential, non-judgemental space – for free. They are staffed by supportive people, who provide immediate support, counselling and resources. Help is available, speak to someone today:
 
@@ -32,3 +28,8 @@ Some other model results included:
 
 To see our full paper click here: 
 `;
+export {
+    RECOGNIZE_AI_MESSAGE,
+    RECOGNIZE_AI_RESOURCES,
+    RECOGNIZE_AI_MODEL_DESC
+}

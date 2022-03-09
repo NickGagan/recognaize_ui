@@ -6,11 +6,11 @@ import cx from "classnames";
 import { ReactNotifications, Store } from 'react-notifications-component'
 import { RECOGNIZE_AI_MESSAGE, RECOGNIZE_AI_RESOURCES, RECOGNIZE_AI_MODEL_DESC } from "./utils/messages";
 import report from "./static/Recognize_report_placeholder.pdf"
+import {Buffer} from "buffer";
 const REDDIT_STATE = "reddit";
 const TEXT_STATE = "text";
 
 const API_HOST = process.env.REACT_APP_API_ENV === "dev" ? "http://localhost:3001" : "https://recognize-ai-api.herokuapp.com";
-
 function App() {
   const [currentTab, selectTab] = useState(REDDIT_STATE);
   const [inputText, changeInputText] = useState("");
@@ -42,11 +42,13 @@ function App() {
     return re.test(inputText) && (urlSplit.length === 8 || (urlSplit.length === 9 && urlSplit[8] === ""))
   }
   function _onAnalyzeButtonClick() {
+    console.log(Buffer.from("admin:admin").toString('base64'));
     const options = {
       method: "POST",
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${Buffer.from("admin:admin").toString('base64')}`
       },
       body: JSON.stringify({
         message: `${RECOGNIZE_AI_MESSAGE}
@@ -72,6 +74,7 @@ function App() {
     fetch(url, options)
       .then((response) => response.json())
       .then(result => {
+        console.log("result");
         let message = "Recognaize.ai has detected no mental health issues in this text. Still concerned? Visit our resources link below.";
         let type = "success";
         if (result.poor_mental_health && currentTab === TEXT_STATE) {
