@@ -15,6 +15,7 @@ function App() {
   const [currentTab, selectTab] = useState(REDDIT_STATE);
   const [inputText, changeInputText] = useState("");
   const [redditMessageFlag, changeRedditFlag] = useState(false);
+  const [analyzingMentalHealth, nowAnalyzing] = useState(false)
   function _changeRedditFlagState(event) {
     changeRedditFlag(event.target.checked);
   }
@@ -35,13 +36,18 @@ function App() {
 
   function _isValidInput() {
     if (currentTab === TEXT_STATE){
-      return inputText.length >= 80
+      return inputText.length >= 100
     }
     const re = new RegExp("https://www.reddit.com/r/[^/]+/comments/[A-Za-z0-9]{6,}/[^/]")
     const urlSplit = inputText.split("/")
     return re.test(inputText) && (urlSplit.length === 8 || (urlSplit.length === 9 && urlSplit[8] === ""))
   }
+
+  function _isButtonDisabled() {
+    return !_isValidInput() || analyzingMentalHealth;
+  }
   function _onAnalyzeButtonClick() {
+    nowAnalyzing(true);
     const options = {
       method: "POST",
       headers: {
@@ -73,6 +79,7 @@ function App() {
     fetch(url, options)
       .then((response) => response.json())
       .then(result => {
+        nowAnalyzing(false);
         let message = "Recognaize.ai has detected no mental health issues in this text. Still concerned? Visit our resources link below.";
         let type = "success";
         if (result.poor_mental_health && currentTab === TEXT_STATE) {
@@ -106,6 +113,7 @@ function App() {
         });
       })
       .catch(err => {
+        nowAnalyzing(false);
         Store.addNotification({
           title: "An error occured running Recognaize.ai",
           message: "An unknown error has occured. Please try again later",
@@ -158,7 +166,7 @@ function App() {
           onChange={_updateInputText.bind(this)}
         />
         {invalid && <div className="invalidInputMessage">
-          Minimum 80 characters ({80-inputText.length} remaining)
+          Minimum 100 characters ({100-inputText.length} remaining)
           </div>}
       </>
       
@@ -215,7 +223,7 @@ function App() {
               Reddit Input
             </div>
             <div className="redditDescription">
-              Recognize.ai is able to take a reddit url and determine whether the post displays signs of struggling mental health (min 80 chars). 
+              Recognize.ai is able to take a reddit url and determine whether the post displays signs of struggling mental health (min 100 chars). 
             </div>
             {_renderRedditUrlInput()}
             <div className="messageUserContainer">
@@ -238,7 +246,7 @@ function App() {
             </div>
             <div className="redditDescription">
               {RECOGNIZE_AI_MODEL_DESC}
-              <a href={report} target="_blank"> Report </a>
+              <a href={report} target="_blank">Report</a>
             </div>
           </div>
 
@@ -252,7 +260,7 @@ function App() {
               Text Input
             </div>
             <div className="textDescription">
-              Recognize.ai is able to take a text input and determine whether it displays sign of struggling mental health (min 80 chars). 
+              Recognize.ai is able to take a text input and determine whether it displays sign of struggling mental health (min 100 chars). 
             </div>
             {_renderTextArea()}
             {_renderResourcesContent()}
@@ -263,7 +271,7 @@ function App() {
             </div>
             <div className="textDescription">
               {RECOGNIZE_AI_MODEL_DESC}
-              <a href={report} target="_blank"> Report </a>
+              <a href={report} target="_blank">Report</a>
             </div>
           </div>
         </div>}
@@ -275,23 +283,23 @@ function App() {
     const primaryButtonClass = cx({
       "button": true,
       "primary": true,
-      "disabled": !_isValidInput()
+      "disabled": _isButtonDisabled()
     });
     const secondaryButtonClass = cx({
       "button": true,
       "secondary": true,
-      "disabled": !_isValidInput()
+      "disabled": _isButtonDisabled()
     });
     return (
       <div className="footerSection">
           {currentTab === REDDIT_STATE && <button
             className={secondaryButtonClass}
             onClick = {() => _onPreviewClick()}
-            disabled={!_isValidInput()}
+            disabled={_isButtonDisabled()}
             >
               Preview
             </button>}
-            <button disabled={!_isValidInput()} className={primaryButtonClass} onClick = {() => _onAnalyzeButtonClick()}>
+            <button disabled={_isButtonDisabled()} className={primaryButtonClass} onClick = {() => _onAnalyzeButtonClick()}>
               Analyze
             </button>
       </div>
