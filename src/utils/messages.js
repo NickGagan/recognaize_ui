@@ -29,14 +29,14 @@ The preprocessing steps include: Removing stopwords, lemmatization, removing any
 
 FastText was not the highest performing model, however it was chosen due to Heroku deployment memory limitations. The results are as follows:
 Accuracy: 89.76%
-Recall: 92.51%
-Precision: 86.53%
+Precision: 92.51%
+Recall: 86.53%
 F1-score: 89.42%
 
 The highest performing model was an XL-Net Random Forest ensemble model with these results:
 Accuracy: 97.22%
-Recall: 93.32%
-Precision: 90.26%
+Precision: 93.32%
+Recall: 90.26%
 F1-score: 91.76%
 
 For more information, read our full report: 
